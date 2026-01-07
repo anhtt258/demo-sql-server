@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý Sinh viên - SQL Server Demo - AnhTT184</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1><i class="fas fa-database"></i> Quản lý Sinh viên với SQL Server</h1>
+            <p class="subtitle">Demo CRUD Operations - Node.js & SQL Server</p>
+        </header>
+
+        <div class="main-content">
+            <div class="sidebar">
+                <nav class="nav-menu">
+                    <button class="nav-btn active" data-section="search">
+                        <i class="fas fa-search"></i> Tìm kiếm
+                    </button>
+                    <button class="nav-btn" data-section="insert">
+                        <i class="fas fa-plus-circle"></i> Thêm mới
+                    </button>
+                    <button class="nav-btn" data-section="update">
+                        <i class="fas fa-edit"></i> Cập nhật
+                    </button>
+                    <button class="nav-btn" data-section="delete">
+                        <i class="fas fa-trash-alt"></i> Xóa
+                    </button>
+                </nav>
+                
+                <div class="db-status">
+                    <h3><i class="fas fa-server"></i> Trạng thái DB</h3>
+                    <div class="status-indicator connected">
+                        <span class="status-dot"></span>
+                        <span>Đã kết nối SQL Server</span>
+                    </div>
+                    <div class="api-info">
+                        <h4>API Endpoints:</h4>
+                        <ul>
+                            <li>GET /api/students</li>
+                            <li>GET /api/students/:id</li>
+                            <li>POST /api/students</li>
+                            <li>PUT /api/students/:id</li>
+                            <li>DELETE /api/students/:id</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content">
+                <!-- Search Section -->
+                <section id="search" class="section active">
+                    <h2><i class="fas fa-search"></i> Tìm kiếm Sinh viên</h2>
+                    <div class="search-box">
+                        <div class="form-group">
+                            <label for="searchId"><i class="fas fa-id-card"></i> Mã sinh viên:</label>
+                            <input type="text" id="searchId" placeholder="Nhập mã sinh viên...">
+                        </div>
+                        <div class="form-group">
+                            <label for="searchName"><i class="fas fa-user"></i> Tên sinh viên:</label>
+                            <input type="text" id="searchName" placeholder="Nhập tên sinh viên...">
+                        </div>
+                        <button id="searchBtn" class="btn btn-primary">
+                            <i class="fas fa-search"></i> Tìm kiếm
+                        </button>
+                        <button id="clearSearchBtn" class="btn btn-secondary">
+                            <i class="fas fa-eraser"></i> Xóa
+                        </button>
+                    </div>
+                    
+                    <div class="results-container">
+                        <h3>Kết quả tìm kiếm</h3>
+                        <div class="table-container">
+                            <table id="studentsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Mã SV</th>
+                                        <th>Họ tên</th>
+                                        <th>Email</th>
+                                        <th>Tuổi</th>
+                                        <th>Chuyên ngành</th>
+                                        <th>GPA</th>
+                                        <th>Ngày nhập học</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Data will be populated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Insert Section -->
+                <section id="insert" class="section">
+                    <h2><i class="fas fa-plus-circle"></i> Thêm Sinh viên mới</h2>
+                    <form id="insertForm" class="vertical-form">
+                        <div class="form-group">
+                            <label for="insertId"><i class="fas fa-id-card"></i> Mã sinh viên *</label>
+                            <input type="text" id="insertId" required placeholder="SV001">
+                        </div>
+                        <div class="form-group">
+                            <label for="insertName"><i class="fas fa-user"></i> Họ và tên *</label>
+                            <input type="text" id="insertName" required placeholder="Trần Tuấn Anh">
+                        </div>
+                        <div class="form-group">
+                            <label for="insertEmail"><i class="fas fa-envelope"></i> Email *</label>
+                            <input type="email" id="insertEmail" required placeholder="example@email.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="insertAge"><i class="fas fa-birthday-cake"></i> Tuổi</label>
+                            <input type="number" id="insertAge" min="16" max="50" placeholder="20">
+                        </div>
+                        <div class="form-group">
+                            <label for="insertMajor"><i class="fas fa-graduation-cap"></i> Chuyên ngành</label>
+                            <input type="text" id="insertMajor" placeholder="Công nghệ thông tin">
+                        </div>
+                        <div class="form-group">
+                            <label for="insertGPA"><i class="fas fa-star"></i> GPA</label>
+                            <input type="number" step="0.01" id="insertGPA" min="0" max="4" placeholder="3.5">
+                        </div>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save"></i> Thêm sinh viên
+                        </button>
+                        <div id="insertMessage" class="message"></div>
+                    </form>
+                </section>
+
+                <!-- Update Section -->
+                <section id="update" class="section">
+                    <h2><i class="fas fa-edit"></i> Cập nhật Thông tin Sinh viên</h2>
+                    <div class="update-form">
+                        <div class="form-group">
+                            <label for="updateId"><i class="fas fa-id-card"></i> Mã sinh viên cần cập nhật *</label>
+                            <input type="text" id="updateId" placeholder="Nhập mã sinh viên" required>
+                            <button type="button" id="loadStudentBtn" class="btn btn-small">
+                                <i class="fas fa-download"></i> Tải thông tin
+                            </button>
+                        </div>
+                        
+                        <form id="updateForm" class="vertical-form">
+                            <div class="form-group">
+                                <label for="updateName"><i class="fas fa-user"></i> Họ và tên *</label>
+                                <input type="text" id="updateName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="updateEmail"><i class="fas fa-envelope"></i> Email *</label>
+                                <input type="email" id="updateEmail" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="updateAge"><i class="fas fa-birthday-cake"></i> Tuổi</label>
+                                <input type="number" id="updateAge" min="16" max="50">
+                            </div>
+                            <div class="form-group">
+                                <label for="updateMajor"><i class="fas fa-graduation-cap"></i> Chuyên ngành</label>
+                                <input type="text" id="updateMajor">
+                            </div>
+                            <div class="form-group">
+                                <label for="updateGPA"><i class="fas fa-star"></i> GPA</label>
+                                <input type="number" step="0.01" id="updateGPA" min="0" max="4">
+                            </div>
+                            <button type="submit" class="btn btn-warning">
+                                <i class="fas fa-sync-alt"></i> Cập nhật thông tin
+                            </button>
+                            <div id="updateMessage" class="message"></div>
+                        </form>
+                    </div>
+                </section>
+
+                <!-- Delete Section -->
+                <section id="delete" class="section">
+                    <h2><i class="fas fa-trash-alt"></i> Xóa Sinh viên</h2>
+                    <div class="delete-form">
+                        <div class="form-group">
+                            <label for="deleteId"><i class="fas fa-id-card"></i> Mã sinh viên cần xóa *</label>
+                            <input type="text" id="deleteId" placeholder="Nhập mã sinh viên" required>
+                            <button type="button" id="loadDeleteBtn" class="btn btn-small">
+                                <i class="fas fa-search"></i> Kiểm tra
+                            </button>
+                        </div>
+                        
+                        <div id="studentPreview" class="student-preview">
+                            <!-- Student info will be shown here -->
+                        </div>
+                        
+                        <button id="deleteBtn" class="btn btn-danger" disabled>
+                            <i class="fas fa-trash-alt"></i> Xóa sinh viên
+                        </button>
+                        <div id="deleteMessage" class="message"></div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <p>© 2024 SQL Server CRUD Demo - Dành cho giảng dạy</p>
+            <p class="footer-info">Backend: Node.js + Express | Database: Microsoft SQL Server</p>
+            <p>Author: AnhTT184</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
